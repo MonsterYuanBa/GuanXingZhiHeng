@@ -44,5 +44,9 @@ Thumbs.db
 .pytest_cache/
 .mypy_cache/
 
-# 超大媒体文件（GitHub 单文件上限 100MB）
-WebFrontEnd/src/materials/demo_test.mp4
+# 前端 materials 目录下的视频（体积大，不提交）
+WebFrontEnd/src/materials/*.mp4
+WebFrontEnd/src/materials/*.webm
+WebFrontEnd/src/materials/*.mov
+WebFrontEnd/src/materials/*.avi
+WebFrontEnd/src/materials/*.mkv
