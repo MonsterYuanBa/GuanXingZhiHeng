@@ -1,0 +1,16 @@
+<svg width="960" height="540" viewBox="0 0 960 540" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="960" height="540" rx="28" fill="#EAF8F6"/>
+  <rect x="86" y="70" width="788" height="402" rx="22" fill="#FFFFFF" stroke="#A7DCD3" stroke-width="4"/>
+  <line x1="146" y1="408" x2="818" y2="408" stroke="#B3DDD6" stroke-width="3"/>
+  <line x1="146" y1="146" x2="146" y2="408" stroke="#B3DDD6" stroke-width="3"/>
+  <path d="M164 366C214 320 242 336 286 292C334 244 360 260 410 224C468 182 520 198 568 166C612 138 654 154 708 120C736 102 760 96 804 94" stroke="#139F90" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="286" cy="292" r="10" fill="#139F90"/>
+  <circle cx="410" cy="224" r="10" fill="#139F90"/>
+  <circle cx="568" cy="166" r="10" fill="#139F90"/>
+  <circle cx="708" cy="120" r="10" fill="#139F90"/>
+  <rect x="616" y="292" width="214" height="136" rx="14" fill="#E7F8F4" stroke="#B8E5DD" stroke-width="2"/>
+  <text x="638" y="328" fill="#0B7E72" font-size="20" font-family="Arial, sans-serif">趋势结论</text>
+  <text x="638" y="360" fill="#0B746A" font-size="16" font-family="Arial, sans-serif">风险指数下降 18%</text>
+  <text x="638" y="386" fill="#0B746A" font-size="16" font-family="Arial, sans-serif">稳定性提升 12%</text>
+  <text x="104" y="506" fill="#0B746A" font-size="24" font-family="Arial, sans-serif">多时相数据对比，持续追踪健康变化趋势</text>
+</svg>

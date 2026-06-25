@@ -1,0 +1,154 @@
+﻿:root {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: #1f2937;
+  background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 52%, #fef9c3 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 52%, #fef9c3 100%);
+  background-attachment: fixed;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.app-shell {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.08);
+  max-width: 980px;
+  margin: 20px auto;
+}
+
+.form-card {
+  max-width: 520px;
+  margin: 40px auto;
+}
+
+form {
+  display: grid;
+  gap: 8px;
+}
+
+.grid-form {
+  grid-template-columns: 140px 1fr;
+  align-items: center;
+}
+
+label {
+  font-weight: 600;
+}
+
+input,
+select,
+button {
+  font: inherit;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+}
+
+button {
+  margin-top: 12px;
+  border: 0;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.muted {
+  color: #64748b;
+}
+
+.error {
+  color: #b91c1c;
+}
+
+.ok {
+  color: #047857;
+}
+
+.warn {
+  color: #b45309;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.metric-card {
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 10px;
+  background: #f8fafc;
+}
+
+.metric-card p {
+  margin: 0 0 6px 0;
+}
+
+.metric-card strong {
+  font-size: 24px;
+}
+
+.highlight-panel {
+  border-left: 4px solid #2563eb;
+  background: #eff6ff;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 16px;
+}
+
+th,
+td {
+  border: 1px solid #cbd5e1;
+  padding: 8px;
+  text-align: left;
+}
+
+pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 12px;
+  border-radius: 8px;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 768px) {
+  .card,
+  .form-card {
+    margin: 10px;
+  }
+
+  .grid-form {
+    grid-template-columns: 1fr;
+  }
+}

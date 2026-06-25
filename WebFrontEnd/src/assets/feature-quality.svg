@@ -1,0 +1,15 @@
+<svg width="960" height="540" viewBox="0 0 960 540" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="960" height="540" rx="28" fill="#EAF8F6"/>
+  <rect x="48" y="66" width="864" height="408" rx="24" fill="#F8FFFE" stroke="#A7DCD3" stroke-width="4"/>
+  <rect x="92" y="124" width="356" height="292" rx="18" fill="#E3F4F1"/>
+  <rect x="512" y="124" width="356" height="292" rx="18" fill="#D9F0EC"/>
+  <circle cx="270" cy="270" r="96" fill="#7ABCB3" fill-opacity="0.4"/>
+  <circle cx="692" cy="270" r="96" fill="#22A090" fill-opacity="0.5"/>
+  <path d="M120 386C176 330 248 302 328 270" stroke="#4B5563" stroke-opacity="0.4" stroke-width="16" stroke-linecap="round"/>
+  <path d="M538 386C594 330 666 302 746 270" stroke="#128F81" stroke-width="10" stroke-linecap="round"/>
+  <rect x="110" y="90" width="320" height="28" rx="8" fill="#93A9A4" fill-opacity="0.35"/>
+  <rect x="530" y="90" width="320" height="28" rx="8" fill="#0C9E8F" fill-opacity="0.35"/>
+  <text x="116" y="113" fill="#617472" font-size="18" font-family="Arial, sans-serif">模糊输入</text>
+  <text x="536" y="113" fill="#0B7E72" font-size="18" font-family="Arial, sans-serif">清晰输入</text>
+  <text x="90" y="500" fill="#0B746A" font-size="24" font-family="Arial, sans-serif">上传前自动检测清晰度与遮挡，减少无效样本</text>
+</svg>

@@ -1,0 +1,17 @@
+<svg width="960" height="540" viewBox="0 0 960 540" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="960" height="540" rx="28" fill="#EAF8F6"/>
+  <rect x="96" y="62" width="768" height="416" rx="22" fill="#FFFFFF" stroke="#A7DCD3" stroke-width="4"/>
+  <rect x="132" y="106" width="256" height="146" rx="14" fill="#E8F7F4"/>
+  <rect x="420" y="106" width="404" height="24" rx="8" fill="#D5EEE9"/>
+  <rect x="420" y="146" width="328" height="20" rx="8" fill="#E8F7F4"/>
+  <rect x="420" y="182" width="374" height="20" rx="8" fill="#E8F7F4"/>
+  <rect x="132" y="274" width="692" height="158" rx="16" fill="#F3FCFA" stroke="#BFE7DF" stroke-width="3"/>
+  <rect x="160" y="304" width="192" height="96" rx="12" fill="#DFF3EE"/>
+  <rect x="372" y="304" width="192" height="96" rx="12" fill="#CEF0E9"/>
+  <rect x="584" y="304" width="212" height="96" rx="12" fill="#BEEDE4"/>
+  <text x="446" y="123" fill="#0B7E72" font-size="18" font-family="Arial, sans-serif">自动评估结果摘要</text>
+  <text x="186" y="362" fill="#0B746A" font-size="20" font-family="Arial, sans-serif">颈肩风险</text>
+  <text x="398" y="362" fill="#0B746A" font-size="20" font-family="Arial, sans-serif">骨盆偏移</text>
+  <text x="642" y="362" fill="#0B746A" font-size="20" font-family="Arial, sans-serif">步态稳定</text>
+  <text x="104" y="506" fill="#0B746A" font-size="24" font-family="Arial, sans-serif">自动评估体态问题，生成结构化健康分析结果</text>
+</svg>
