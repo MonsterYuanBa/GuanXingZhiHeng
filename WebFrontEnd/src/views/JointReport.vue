@@ -419,43 +419,164 @@ function renderStructuredSectionsForPdf(structured, fallbackText) {
     .join('')
 }
 
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    if (!blob) {
+      resolve('')
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result || ''))
+    reader.onerror = () => reject(reader.error)
+    reader.readAsDataURL(blob)
+  })
+}
+
+async function urlToDataUrlForPdf(url) {
+  const u = String(url || '').trim()
+  if (!u) return ''
+  if (u.startsWith('data:')) return u
+  try {
+    const res = await fetch(u)
+    if (!res.ok) return ''
+    return blobToDataUrl(await res.blob())
+  } catch {
+    return ''
+  }
+}
+
+function resolveTongueRecordIdForImage(r) {
+  if (!r) return null
+  const meta = r?.payload?.meta || r?.payload?.meta_json || r?.meta || {}
+  const tixingFb = r?.tixingFb || r?.tixing_fb || r?.payload?.tixingFb || r?.payload?.tixing_fb
+  const tongueData = r?.tongueData ?? r?.payload?.tongueData
+  return (
+    _positiveRecordId(r.sourceTongueRecordId) ||
+    _positiveRecordId(meta.sourceTongueRecordId) ||
+    _positiveRecordId(tixingFb?.sourceTongueRecordId) ||
+    (tongueData && typeof tongueData === 'object'
+      ? _positiveRecordId(tongueData.recordId ?? tongueData.record_id)
+      : null) ||
+    _positiveRecordId(r.id)
+  )
+}
+
+async function fetchTongueImageBlob(uid, recordId) {
+  const rid = _positiveRecordId(recordId)
+  if (rid == null) return null
+  try {
+    const blob = await fetchTongueImage(rid, uid)
+    return blob || null
+  } catch {
+    return null
+  }
+}
+
+async function cacheTongueImageBlob(blob) {
+  if (!blob) return
+  if (tongueImageUrlForPdf.value && tongueImageIsObjectUrl.value) {
+    URL.revokeObjectURL(tongueImageUrlForPdf.value)
+  }
+  tongueImageUrlForPdf.value = URL.createObjectURL(blob)
+  tongueImageIsObjectUrl.value = true
+}
+
+async function resolveTongueImageDataUrlForPdf(uid, r) {
+  if (tongueImageUrlForPdf.value) {
+    const fromCache = await urlToDataUrlForPdf(tongueImageUrlForPdf.value)
+    if (fromCache) return fromCache
+  }
+
+  try {
+    const tongueFile = await getCollectorImage(uid, 'tongue')
+    if (tongueFile) {
+      await cacheTongueImageBlob(tongueFile)
+      return blobToDataUrl(tongueFile)
+    }
+  } catch {
+    /* ignore */
+  }
+
+  const tongueRid = resolveTongueRecordIdForImage(r)
+  const jointRid = _positiveRecordId(r?.id)
+  const candidateIds = []
+  if (tongueRid != null) candidateIds.push(tongueRid)
+  if (jointRid != null && jointRid !== tongueRid) candidateIds.push(jointRid)
+
+  for (const rid of candidateIds) {
+    const blob = await fetchTongueImageBlob(uid, rid)
+    if (blob) {
+      await cacheTongueImageBlob(blob)
+      return blobToDataUrl(blob)
+    }
+  }
+  return ''
+}
+
+function waitForPopupImages(popup, timeoutMs = 4000) {
+  return new Promise((resolve) => {
+    const imgs = Array.from(popup.document?.images || [])
+    if (!imgs.length) {
+      resolve()
+      return
+    }
+    let done = false
+    const finish = () => {
+      if (done) return
+      done = true
+      resolve()
+    }
+    let pending = 0
+    imgs.forEach((img) => {
+      if (img.complete) return
+      pending += 1
+      img.addEventListener('load', () => {
+        pending -= 1
+        if (pending <= 0) finish()
+      }, { once: true })
+      img.addEventListener('error', () => {
+        pending -= 1
+        if (pending <= 0) finish()
+      }, { once: true })
+    })
+    if (pending <= 0) finish()
+    window.setTimeout(finish, timeoutMs)
+  })
+}
+
+async function preloadTongueImageForPdf(uid, r) {
+  if (tongueImageUrlForPdf.value) return
+  try {
+    const tongueFile = await getCollectorImage(uid, 'tongue')
+    if (tongueFile) {
+      await cacheTongueImageBlob(tongueFile)
+      return
+    }
+  } catch {
+    /* ignore */
+  }
+  const tongueRid = resolveTongueRecordIdForImage(r)
+  const jointRid = _positiveRecordId(r?.id)
+  const candidateIds = []
+  if (tongueRid != null) candidateIds.push(tongueRid)
+  if (jointRid != null && jointRid !== tongueRid) candidateIds.push(jointRid)
+  for (const rid of candidateIds) {
+    const blob = await fetchTongueImageBlob(uid, rid)
+    if (blob) {
+      await cacheTongueImageBlob(blob)
+      return
+    }
+  }
+}
+
 async function exportPdf() {
   if (!report.value) return
 
   const uid = localStorage.getItem('mask_user_id') || 'admin'
-  // 若导出时还没有拿到舌苔 object URL，则尝试再读一次缓存（可能已被 clearCollectorImages 清掉）
-  if (!tongueImageUrlForPdf.value) {
-    try {
-      const tongueFile = await getCollectorImage(uid, 'tongue')
-      if (tongueFile) {
-        if (tongueImageUrlForPdf.value && tongueImageIsObjectUrl.value) {
-          URL.revokeObjectURL(tongueImageUrlForPdf.value)
-        }
-        tongueImageUrlForPdf.value = URL.createObjectURL(tongueFile)
-        tongueImageIsObjectUrl.value = true
-      }
-    } catch {
-      /* ignore */
-    }
-  }
-  // 从历史记录进入时，浏览器本地缓存里通常没有舌苔图像；此时尝试从后端回溯获取
-  if (!tongueImageUrlForPdf.value) {
-    try {
-      const rid = Number(report.value?.id)
-      if (Number.isFinite(rid) && rid > 0) {
-        const blob = await fetchTongueImage(rid, uid)
-        if (blob) {
-          if (tongueImageUrlForPdf.value && tongueImageIsObjectUrl.value) {
-            URL.revokeObjectURL(tongueImageUrlForPdf.value)
-          }
-          tongueImageUrlForPdf.value = URL.createObjectURL(blob)
-          tongueImageIsObjectUrl.value = true
-        }
-      }
-    } catch {
-      /* ignore */
-    }
-  }
+  const [processedImageDataUrl, tongueImageDataUrl] = await Promise.all([
+    urlToDataUrlForPdf(humanImageUrl.value || humanBaseImageUrl.value || ''),
+    resolveTongueImageDataUrlForPdf(uid, report.value),
+  ])
 
   const popup = window.open('', '_blank')
   if (!popup) return
@@ -472,13 +593,11 @@ async function exportPdf() {
   const postureStructuredHtml = renderStructuredSectionsForPdf(structuredPostureReport.value, '暂无体态报告')
   const tongueStructuredHtml = renderStructuredSectionsForPdf(structuredTongueReport.value, '暂无舌苔报告')
   const jointStructuredHtml = renderStructuredSectionsForPdf(structuredJointReport.value, '暂无分析与建议')
-  const processedImageUrl = String(humanImageUrl.value || humanBaseImageUrl.value || '').trim()
-  const processedImageCardHtml = processedImageUrl
-    ? `<img class="processed-img" src="${escapeHtml(processedImageUrl)}" alt="处理后图像" />`
+  const processedImageCardHtml = processedImageDataUrl
+    ? `<img class="processed-img" src="${escapeHtml(processedImageDataUrl)}" alt="处理后图像" />`
     : '<p class="muted">暂无处理后图像</p>'
-  const tongueImageUrl = String(tongueImageUrlForPdf.value || '').trim()
-  const tongueImageCardHtml = tongueImageUrl
-    ? `<img class="processed-img" src="${escapeHtml(tongueImageUrl)}" alt="舌苔图像" />`
+  const tongueImageCardHtml = tongueImageDataUrl
+    ? `<img class="processed-img" src="${escapeHtml(tongueImageDataUrl)}" alt="舌苔图像" />`
     : '<p class="muted">暂无舌苔图像</p>'
   const statsCards = [
     { label: '体态体型指标数', value: postureRows.value.length || 0 },
@@ -584,8 +703,9 @@ async function exportPdf() {
     </html>
   `)
   popup.document.close()
+  await waitForPopupImages(popup)
   popup.focus()
-  setTimeout(() => popup.print(), 250)
+  popup.print()
 }
 
 function openMetricGuide() {
@@ -914,6 +1034,10 @@ async function onTestJointAgent() {
         res.sourcePostureRecordId ||
         report.value?.sourcePostureRecordId ||
         null,
+      sourceTongueRecordId:
+        res.sourceTongueRecordId ||
+        report.value?.sourceTongueRecordId ||
+        null,
       testSampleId: sampleId,
     }
     saveLatestJointReport(next)
@@ -1158,6 +1282,7 @@ onMounted(async () => {
     } finally {
       humanImageLoading.value = false
     }
+    void preloadTongueImageForPdf(uid, latest)
     return
   }
 
@@ -1200,6 +1325,8 @@ onMounted(async () => {
     .finally(() => {
       humanImageLoading.value = false
     })
+
+  void preloadTongueImageForPdf(uid, latest)
 })
 
 onUnmounted(() => {

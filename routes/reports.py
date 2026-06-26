@@ -123,7 +123,8 @@ def get_tongue_image(
 
     tongue_path = (rec.front_image_path or "").strip() if analysis_type == "tongue_only" else ""
     if not tongue_path:
-        src_id = meta.get("sourceTongueRecordId")
+        tixing_fb = rec.tixing_fb if isinstance(rec.tixing_fb, dict) else {}
+        src_id = meta.get("sourceTongueRecordId") or tixing_fb.get("sourceTongueRecordId")
         try:
             src_id_int = int(src_id) if src_id is not None else None
         except Exception:

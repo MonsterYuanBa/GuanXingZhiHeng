@@ -1521,7 +1521,7 @@ onUnmounted(() => {
 
               <section class="card right-panel">
                 <div class="report-head">
-                  <h3>舌苔报告</h3>
+                  <h3>中医体质分析报告</h3>
                   <span
                     class="agent-pill"
                     :class="{
@@ -1541,7 +1541,7 @@ onUnmounted(() => {
                     }}
                   </span>
                 </div>
-                <div class="report-scroll">
+                <div class="report-scroll report-scroll-wide">
                   <div v-if="tongueResult.report" class="structured-wrap">
                     <section
                       v-for="(sec, sIdx) in structuredTongueReport.sections"
@@ -1564,7 +1564,7 @@ onUnmounted(() => {
                       </ul>
                     </section>
                   </div>
-                  <p v-else class="muted">等待舌苔分析报告内容</p>
+                  <p v-else class="muted">等待中医体质分析报告内容</p>
                 </div>
               </section>
             </div>
@@ -1834,7 +1834,7 @@ label {
   display: grid;
   grid-template-columns: 420px 1fr;
   gap: 14px;
-  align-items: start;
+  align-items: stretch;
 }
 .card h3 { margin-top: 0; color: #1e293b; }
 .report-head {

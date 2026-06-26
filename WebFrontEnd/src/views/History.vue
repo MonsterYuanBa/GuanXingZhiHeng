@@ -591,6 +591,14 @@ function openRecord(item) {
       item?.payload?.meta?.sourcePostureRecordId ||
       item?.payload?.meta_json?.sourcePostureRecordId ||
       null,
+    sourceTongueRecordId:
+      item?.tixingFb?.sourceTongueRecordId ||
+      item?.tixing_fb?.sourceTongueRecordId ||
+      item?.meta?.sourceTongueRecordId ||
+      item?.meta_json?.sourceTongueRecordId ||
+      item?.payload?.meta?.sourceTongueRecordId ||
+      item?.payload?.meta_json?.sourceTongueRecordId ||
+      null,
     postureReport: item.postureReport || '',
     tongueReport: item.tongueReport || '',
     report: item.report || '',
