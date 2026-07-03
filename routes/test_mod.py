@@ -425,6 +425,7 @@ def run_joint_agent_from_sample(payload: RunFromSamplePayload, db: Session = Dep
     return {
         "success": True,
         "recordId": rec.id,
+        "reportSerial": rec.report_serial,
         "createdAt": rec.created_at.isoformat() if rec.created_at else None,
         "postureReport": posture_report,
         "tongueReport": tongue_report,

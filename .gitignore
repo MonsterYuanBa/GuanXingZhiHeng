@@ -44,6 +44,11 @@ Thumbs.db
 .pytest_cache/
 .mypy_cache/
 
+# 本地验证脚本与测试图（不进仓库）
+test_image/
+verify_mmpose.py
+verify_sam.py
+
 # 前端 materials 目录下的视频（体积大，不提交）
 WebFrontEnd/src/materials/*.mp4
 WebFrontEnd/src/materials/*.webm

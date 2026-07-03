@@ -102,6 +102,7 @@ export function slimJointReportForStorage(data) {
   if (!data || typeof data !== 'object') return {}
   const {
     id,
+    reportSerial,
     createdAt,
     type,
     analysisType,
@@ -120,6 +121,7 @@ export function slimJointReportForStorage(data) {
   } = data
   return {
     id,
+    reportSerial,
     createdAt,
     type,
     analysisType,
@@ -144,6 +146,7 @@ export function slimHistoryAnalysisForStorage(data) {
   if (!data || typeof data !== 'object') return {}
   const {
     id,
+    reportSerial,
     createdAt,
     type,
     analysisType,
@@ -157,6 +160,7 @@ export function slimHistoryAnalysisForStorage(data) {
   } = data
   return {
     id,
+    reportSerial,
     createdAt,
     type,
     analysisType,

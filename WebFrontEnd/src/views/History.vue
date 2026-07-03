@@ -11,6 +11,7 @@ import {
   saveLatestHistoryAnalysis,
   saveLatestJointReport,
 } from '../services/reportStore'
+import { formatReportSerialLabel, pickReportSerial } from '../utils/reportNumber'
 
 const router = useRouter()
 const loading = ref(false)
@@ -132,7 +133,14 @@ function getAnalysisType(item) {
 const VISIBLE_HISTORY_TYPES = new Set(['joint', 'joint_detailed', 'history_analysis'])
 
 function filterVisibleRecords(list) {
-  return list.filter((r) => VISIBLE_HISTORY_TYPES.has(r.analysisType))
+  return list
+    .filter((r) => VISIBLE_HISTORY_TYPES.has(r.analysisType))
+    .sort((a, b) => {
+      const sa = pickReportSerial(a) ?? 0
+      const sb = pickReportSerial(b) ?? 0
+      if (sa !== sb) return sb - sa
+      return String(b.createdAt || '').localeCompare(String(a.createdAt || ''))
+    })
 }
 
 function pickCreatedAt(item, meta) {
@@ -284,6 +292,7 @@ function normalizeRecord(item) {
   return {
     ...item,
     id: normalizedId,
+    reportSerial: pickReportSerial(item),
     analysisType: type,
     createdAt: pickCreatedAt(item, meta),
     report,
@@ -394,6 +403,7 @@ async function onAnalyzeSelected() {
     if (bmi !== null) metrics.BMI = bmi
     return {
       id: item.id,
+      reportSerial: item.reportSerial,
       createdAt: item.createdAt || null,
       metrics,
       profileMeta: profileMeta || {},
@@ -443,6 +453,7 @@ async function onAnalyzeSelected() {
 
     const latest = {
       id: res.recordId,
+      reportSerial: res.reportSerial ?? null,
       createdAt: res.createdAt || new Date().toISOString(),
       type: 'history_analysis',
       analysisType: 'history_analysis',
@@ -459,6 +470,7 @@ async function onAnalyzeSelected() {
 
     saveHistoryRecord({
       id: latest.id,
+      reportSerial: latest.reportSerial,
       createdAt: latest.createdAt,
       comprehensiveAnalysisText: latest.report,
       titaiFb: {
@@ -580,6 +592,7 @@ function openRecord(item) {
 
   saveLatestJointReport({
     id: item.id,
+    reportSerial: pickReportSerial(item),
     createdAt: item.createdAt,
     type: item.analysisType === 'joint_detailed' ? 'joint_detailed' : 'joint',
     analysisType: item.analysisType || 'joint',
@@ -653,7 +666,7 @@ onMounted(loadHistory)
             <button type="button" class="history-item" @click="openRecord(item)">
               <small>
                 {{ formatDate(item.createdAt) }}
-                <span class="id-tag">ID: {{ item.id }}</span>
+                <span v-if="formatReportSerialLabel(item)" class="id-tag">{{ formatReportSerialLabel(item) }}</span>
                 <span class="type-tag" :class="recordTypeTagClass(item.analysisType)">
                   {{ recordTypeLabel(item.analysisType) }}
                 </span>

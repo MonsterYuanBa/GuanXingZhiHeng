@@ -1,0 +1,37 @@
+# 体态图像处理：mmpose + SAM（在 requirements.txt 之后安装）
+#
+# 前置（仅用 conda 装 PyTorch，不要用 pip 装 torch）:
+#   conda create -n gxzh python=3.10 -y
+#   conda activate gxzh
+#   conda install pytorch==2.0.0 torchvision==0.15.0 torchaudio==2.0.0 pytorch-cuda=11.8 -c pytorch -c nvidia -y
+#   conda install pillow -y -c conda-forge
+#
+# 然后:
+#   pip install -r requirements.txt
+#   pip install -r requirements-vision.txt
+#   git clone https://github.com/facebookresearch/segment-anything.git segment-anything
+#   pip install -e segment-anything
+#
+# mmcv 需匹配 cu118 + torch2.0，见下方 --find-links
+# SAM 权重: models/sam_vit_h_4b8939.pth
+
+--find-links https://download.openmmlab.com/mmcv/dist/cu118/torch2.0.0/index.html
+
+numpy==1.26.4
+opencv-python==4.9.0.80
+setuptools==69.5.1
+
+openmim>=0.3.9
+mmengine==0.10.7
+mmcv==2.0.1
+mmdet==3.3.0
+
+json-tricks==3.17.3
+munkres==1.1.4
+xtcocotools==1.14.3
+matplotlib>=3.8,<4
+scipy>=1.10,<2
+
+# mmpose（Windows 上 chumpy 常失败，用 --no-deps）:
+#   pip install mmpose==1.3.2 --no-deps
+# segment-anything 见上方 pip install -e segment-anything

@@ -24,6 +24,7 @@ def get_report_history(
         "items": [
             {
                 "id": r.id,
+                "reportSerial": r.report_serial,
                 "createdAt": r.created_at.isoformat() if r.created_at else None,
                 "titaiFb": r.titai_fb,
                 "tixingFb": r.tixing_fb,

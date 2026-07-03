@@ -173,6 +173,7 @@ def _build_chart_source_items(records: List[Dict[str, Any]]) -> List[Dict[str, A
         items.append(
             {
                 "id": r.get("id"),
+                "reportSerial": r.get("report_serial"),
                 "timestamp": ts,
                 "metrics": metrics,
                 "profileMeta": profile_meta,
@@ -288,6 +289,7 @@ def generate_history_analysis(
         records_dicts.append(
             {
                 "id": r.id,
+                "report_serial": r.report_serial,
                 "created_at": r.created_at.isoformat() if r.created_at else None,
                 "createdAt": r.created_at.isoformat() if r.created_at else None,
                 "titai_fb": r.titai_fb,
@@ -325,6 +327,7 @@ def generate_history_analysis(
     history_chart_data: List[Dict[str, Any]] = [
         {
             "id": x.get("id"),
+            "reportSerial": x.get("reportSerial"),
             "timestamp": x.get("timestamp"),
             "profileMeta": x.get("profileMeta") if isinstance(x.get("profileMeta"), dict) else {},
             "userData": x.get("userData") if isinstance(x.get("userData"), dict) else {},
@@ -382,6 +385,7 @@ def generate_history_analysis(
         "success": True,
         "msg": "历史记录分析完成",
         "recordId": record.id,
+        "reportSerial": record.report_serial,
         "createdAt": record.created_at.isoformat() if record.created_at else None,
         "analysisType": "history_analysis",
         "historyAnalysisReport": report_text,

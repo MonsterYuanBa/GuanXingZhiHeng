@@ -39,6 +39,8 @@ class AssessmentRecord(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    # 用户可见报告的连续编号（常规/专家/复查）；中间体态舌苔记录不占号
+    report_serial: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     titai_fb = mapped_column(JSON, nullable=True)

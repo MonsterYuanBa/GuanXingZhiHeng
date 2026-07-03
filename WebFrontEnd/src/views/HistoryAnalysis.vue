@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import TopNav from '../components/TopNav.vue'
 import { getLatestHistoryAnalysis } from '../services/reportStore'
 import { parseAgentText } from '../services/structuredText'
+import { formatReportSerialLabel, formatReportSerialShort, pickReportSerial } from '../utils/reportNumber'
 
 const result = ref(null)
 const analyzingDots = ref('.')
@@ -117,6 +118,8 @@ function normalizeSourceItems(sourceItems) {
                 k !== 'id' &&
                 k !== 'createdAt' &&
                 k !== 'timestamp' &&
+                k !== 'reportSerial' &&
+                k !== 'report_serial' &&
                 k !== 'profileMeta' &&
                 k !== 'userData',
             ),
@@ -145,9 +148,16 @@ function normalizeSourceItems(sourceItems) {
           hour12: false,
         })
       : null
-    const idLabel = normalizedId !== null ? `#${normalizedId}` : `序号${idx + 1}`
+    const reportSerial = pickReportSerial(item)
+    const idLabel =
+      reportSerial != null
+        ? formatReportSerialShort(item)
+        : normalizedId !== null
+          ? `#${normalizedId}`
+          : `序号${idx + 1}`
     return {
       id: normalizedId,
+      reportSerial,
       ts,
       label: dateLabel ? `${dateLabel} ${idLabel}` : idLabel,
       metrics,
@@ -330,6 +340,8 @@ function goNextTrendPage() {
 function hydrateLatest(latest) {
   if (!latest) return
   result.value = {
+    id: latest.id,
+    reportSerial: pickReportSerial(latest),
     createdAt: latest.createdAt || '',
     trendData: toRows(latest.trendData),
     sourceItems: Array.isArray(latest.sourceItems) ? latest.sourceItems : [],
@@ -386,7 +398,7 @@ function exportPdf() {
       </head>
       <body>
         <h1>复查分析报告</h1>
-        <div class="muted">分析时间：${escapeHtml(result.value.createdAt || '未知时间')}</div>
+        <div class="muted">${escapeHtml(formatReportSerialLabel(result.value) ? `${formatReportSerialLabel(result.value)} · ` : '')}分析时间：${escapeHtml(result.value.createdAt || '未知时间')}</div>
         <div class="card">
           <h2>历史记录用户数据</h2>
           <table>
@@ -450,6 +462,7 @@ onUnmounted(() => {
     <main class="content">
       <section v-if="result" class="card shell">
         <h2>复查分析</h2>
+        <p v-if="formatReportSerialLabel(result)" class="report-serial">{{ formatReportSerialLabel(result) }}</p>
         <p class="muted">分析时间：{{ result.createdAt || '未知时间' }}</p>
         <div v-if="result.isGenerating" class="agent-wait-row">
           <button type="button" class="agent-pill analyzing" disabled>

@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from db.models import Account, AssessmentRecord, User, UserProfile
+from db.report_serial import next_report_serial, should_assign_report_serial
 
 DEFAULT_ALLERGY_HISTORY = "无过敏史"
 
@@ -102,8 +103,11 @@ def save_assessment(
     history_chart_data: list[dict] | None = None,
     user_requirements: list[dict] | None = None,
 ) -> AssessmentRecord:
+    assign_serial = should_assign_report_serial(meta, titai_fb)
+    report_serial = next_report_serial(db, user.id) if assign_serial else None
     rec = AssessmentRecord(
         user_id=user.id,
+        report_serial=report_serial,
         titai_fb=_json_safe(titai_fb),
         tixing_fb=_json_safe(tixing_fb),
         titai_lr=_json_safe(titai_lr),

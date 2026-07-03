@@ -154,11 +154,35 @@ def _migrate_user_requirements_from_meta_json() -> None:
         db.close()
 
 
+def _migrate_report_serial_column() -> None:
+    """用户可见报告连续编号：加列并为历史数据回填。"""
+    insp = inspect(engine)
+    if not insp.has_table("assessment_records"):
+        return
+    cols = {c["name"] for c in insp.get_columns("assessment_records")}
+    added = "report_serial" not in cols
+    if added:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE assessment_records ADD COLUMN report_serial INTEGER"))
+
+    from db.report_serial import backfill_missing_report_serials, backfill_report_serials
+
+    db = SessionLocal()
+    try:
+        if added:
+            backfill_report_serials(db)
+        else:
+            backfill_missing_report_serials(db)
+    finally:
+        db.close()
+
+
 def init_db() -> None:
     Base.metadata.create_all(bind=engine)
     _migrate_assessment_record_schema()
     # 须在任意 ORM 全表加载 AssessmentRecord 之前加列，否则 SELECT 会引用尚不存在的 user_requirements
     _migrate_assessment_user_requirements_column()
+    _migrate_report_serial_column()
     _migrate_user_profile_schema()
     _migrate_user_nickname_column()
     _migrate_tcm_ten_questions_to_assessment_records()

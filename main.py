@@ -1,3 +1,5 @@
+# cd WebFrontEnd
+# npm run dev
 # conda activate openmmlab
 # python -m uvicorn main:app --reload --port 8081
 

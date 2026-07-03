@@ -460,12 +460,16 @@ def generate_joint_report(payload: JointReportPayload, db: Session = Depends(get
         tcm_ten_questions=tcm_ten,
         user_requirements=merged_pre_joint_reqs if merged_pre_joint_reqs else normalize_stored_requirements([]),
     )
-    push_system_status(payload.userId, f"常规分析：报告已保存，记录ID: {record.id}")
+    push_system_status(
+        payload.userId,
+        f"常规分析：报告已保存，报告编号: {record.report_serial}（内部记录 {record.id}）",
+    )
 
     return {
         "success": True,
         "msg": "联合报告生成完成",
         "recordId": record.id,
+        "reportSerial": record.report_serial,
         "createdAt": record.created_at.isoformat() if record.created_at else None,
         "analysisType": "joint_final",
         "sourcePostureRecordId": posture_rec.id if posture_rec else None,
@@ -634,7 +638,10 @@ def detailed_analysis(payload: JointDetailedAnalysisPayload, db: Session = Depen
     cloned.meta_json = meta
     db.commit()
     db.refresh(cloned)
-    push_system_status(user_id, f"专家深度分析完成并已更新记录#{cloned.id}")
+    push_system_status(
+        user_id,
+        f"专家深度分析完成，报告编号: {cloned.report_serial}（内部记录 {cloned.id}）",
+    )
 
     _mock = is_mock_ai_enabled()
     _legacy_strip = legacy.strip() if legacy else ""
@@ -642,6 +649,7 @@ def detailed_analysis(payload: JointDetailedAnalysisPayload, db: Session = Depen
         "success": True,
         "msg": "专家深度分析完成",
         "recordId": cloned.id,
+        "reportSerial": cloned.report_serial,
         "createdAt": cloned.created_at.isoformat() if cloned.created_at else None,
         "sourceRecordId": source.id,
         "postureReport": cloned.posture_analysis_text or "",

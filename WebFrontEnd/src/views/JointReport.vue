@@ -23,6 +23,7 @@ import {
 } from '../services/api'
 import { clearCollectorImages, getCollectorImage, getPostureResultDisplay } from '../services/collectorImageDb'
 import { parseAgentText } from '../services/structuredText'
+import { formatReportSerialLabel, pickReportSerial } from '../utils/reportNumber'
 import { clearPendingPosture, clearPendingTongue } from '../services/reportStore'
 
 const report = ref(null)
@@ -352,6 +353,8 @@ const createdAtDisplay = computed(() => {
 })
 const reportPageTitle = computed(() => '综合分析报告')
 
+const reportSerialLabel = computed(() => formatReportSerialLabel(report.value))
+
 /** Mock 下仅普通常规分析（非专家落库报告）在卡片内额外列出需求；专家深度分析 Mock 的需求已拼在综合报告正文中。 */
 const jointCardUserRequirementLines = computed(() => {
   const lines = []
@@ -664,7 +667,7 @@ async function exportPdf() {
       <body>
         <section class="header">
           <h1>${escapeHtml(reportPageTitle.value)}</h1>
-          <p class="header-sub">生成时间（北京时间）：${escapeHtml(createdAtDisplay.value || '未知时间')}</p>
+          <p class="header-sub">${escapeHtml(reportSerialLabel.value ? `${reportSerialLabel.value} · ` : '')}生成时间（北京时间）：${escapeHtml(createdAtDisplay.value || '未知时间')}</p>
         </section>
         <section class="stats">${statsCards}</section>
         <section class="overview-grid">
@@ -939,6 +942,7 @@ async function onRunJointAnalysis() {
     const next = {
       ...(report.value || {}),
       id: res.recordId,
+      reportSerial: res.reportSerial ?? report.value?.reportSerial ?? null,
       createdAt: res.createdAt || new Date().toISOString(),
       type: 'joint',
       analysisType: 'joint',
@@ -1020,6 +1024,7 @@ async function onTestJointAgent() {
     const next = {
       ...(report.value || {}),
       id: res.recordId,
+      reportSerial: res.reportSerial ?? report.value?.reportSerial ?? null,
       createdAt: res.createdAt || new Date().toISOString(),
       type: 'joint',
       analysisType: 'joint',
@@ -1094,6 +1099,7 @@ async function onRunDetailedAnalysis() {
     const next = {
       ...(report.value || {}),
       id: res.recordId,
+      reportSerial: res.reportSerial ?? report.value?.reportSerial ?? null,
       createdAt: res.createdAt || new Date().toISOString(),
       type: 'joint_detailed',
       analysisType: 'joint_detailed',
@@ -1409,6 +1415,7 @@ onUnmounted(() => {
           </button>
         </div>
         <h2 class="page-title">{{ reportPageTitle }}</h2>
+        <p v-if="reportSerialLabel" class="report-serial">{{ reportSerialLabel }}</p>
         <p class="muted">生成时间（北京时间）：{{ createdAtDisplay }}</p>
         <p v-if="report.isGenerating" class="muted">AI 正在生成分析与建议，完成后会自动展示。</p>
         <p v-else-if="report.generationError" class="warn">{{ report.generationError }}</p>
@@ -1968,6 +1975,12 @@ onUnmounted(() => {
   font-size: 34px;
   line-height: 1.15;
   font-weight: 900;
+}
+.report-serial {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f766e;
 }
 .muted { color: #64748b; font-size: 14px; }
 .warn { color: #b91c1c; font-size: 14px; }
